@@ -4,8 +4,11 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const expressHbs = require('express-handlebars');
+const mongoose = require('mongoose');
 const indexRouter = require('./routes/index');
 
+const connectionString = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority`;
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
 const app = express();
 
 // view engine setup
