@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const expressHbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const session = require('express-session');
 const indexRouter = require('./routes/index');
 
 const connectionString = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority`;
@@ -16,6 +17,11 @@ app.engine('.hbs', expressHbs({ defaultLayout: 'layout', extname: '.hbs' }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+app.use(session({
+  secret: 'hello world secret',
+  resave: false,
+  saveUninitialized: false
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
