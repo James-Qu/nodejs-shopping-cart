@@ -6,10 +6,14 @@ const logger = require('morgan');
 const expressHbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const passport = require('passport');
+const flash = require('connect-flash');
 const indexRouter = require('./routes/index');
 
 const connectionString = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority`;
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+require('./config/passport');
+
 const app = express();
 
 // view engine setup
@@ -26,6 +30,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({ secret: 'very secure!', resave: false, saveUninitialized: false }));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
