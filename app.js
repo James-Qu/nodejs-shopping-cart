@@ -1,3 +1,4 @@
+const validator=require("express-validator")
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -29,6 +30,7 @@ app.use(session({
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(validator())
 app.use(cookieParser());
 app.use(session({ secret: 'very secure!', resave: false, saveUninitialized: false }));
 app.use(flash());
