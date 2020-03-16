@@ -1,4 +1,4 @@
-const validator=require("express-validator")
+const validator = require('express-validator');
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -10,6 +10,7 @@ const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const indexRouter = require('./routes/index');
+const userRoute = require('./routes/user');
 
 const connectionString = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority`;
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -30,7 +31,7 @@ app.use(session({
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(validator())
+app.use(validator());
 app.use(cookieParser());
 app.use(session({ secret: 'very secure!', resave: false, saveUninitialized: false }));
 app.use(flash());
@@ -38,6 +39,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+  // To make login value available to all views
+  res.locals.login = req.isAuthenticated();
+  next();
+});
+
+app.use('/user', userRoute);
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
