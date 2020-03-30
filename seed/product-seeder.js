@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Product = require('../models/product');
 
-const connectionString = 'mongodb+srv://admin:1357924680@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority';
+// const connectionString = 'mongodb+srv://admin:1357924680@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority';
+const connectionString="localhost:27017/shopping"
 const products = [new Product({
   imagePath: 'https://images-na.ssl-images-amazon.com/images/I/511M6ML2t7L.jpg',
   title: 'Zelda Breath Of The Wild',
@@ -35,10 +36,20 @@ new Product({
 ];
 
 async function seedData() {
-  await mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect('mongodb://localhost/shopping', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+  // await mongoose.connect(connectionString);
   products.forEach(async (product) => {
-    await product.save();
+    try {
+      await product.save();
+      console.log("after save");
+    } catch (error) {
+      console.log(error);
+    }
   });
 }
 
-seedData();
+seedData()
+

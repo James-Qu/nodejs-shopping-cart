@@ -11,9 +11,14 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const indexRouter = require('./routes/index');
 const userRoute = require('./routes/user');
+const MongoStore = require('connect-mongo')(session);
 
-const connectionString = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-kq39r.mongodb.net/shopping?retryWrites=true&w=majority`;
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost/shopping', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 require('./config/passport');
 
 const app = express();
@@ -33,7 +38,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(validator());
 app.use(cookieParser());
-app.use(session({ secret: 'very secure!', resave: false, saveUninitialized: false }));
+app.use(session({
+  secret: 'very secure!',
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  cookie: {
+    maxAge: 180 * 60 * 1000
+  }
+}));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -42,6 +55,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   // To make login value available to all views
   res.locals.login = req.isAuthenticated();
+  res.locals.session = req.session;
   next();
 });
 
