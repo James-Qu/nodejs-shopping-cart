@@ -3,6 +3,8 @@
   "rules": {
     "no-console": "off",
     "comma-dangle": ["error", "never"],
-    "prefer-arrow-callback": "off"
+    "prefer-arrow-callback": "off",
+    "no-multi-assign": "off",
+    "no-plusplus": "off",
   }
 }
